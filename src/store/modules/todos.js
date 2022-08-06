@@ -15,10 +15,29 @@ const actions = {
         const response = await axios.get(apiUrl);
         commit('setTodos', response.data);
     },
+
+    async addTodo({ commit }, title) {
+        const response = await axios.post(apiUrl,
+            {
+                todo: {
+                    title,
+                    completed: false
+                }
+            });
+        commit('newTodo', response.data);
+    },
+
     async deleteTodo({ commit }, id) {
         await axios.delete(apiUrl + `/${id}`);
         commit('removeTodo', id);
     },
+
+    async filterTodos({ commit }, event) {
+        const limit = parseInt(event.target.options[event.target.options.selectedIndex].innerText);
+        const response = await axios.get(apiUrl + `?_limit=${limit}`);
+        commit('setTodos', response.data);
+    },
+
     async updateTodo({ commit }, updatedTodo) {
         const response = await axios.put(apiUrl + `/${updatedTodo.id}`, updatedTodo);
         commit('setUpdatedTodo', response.data);
@@ -27,6 +46,8 @@ const actions = {
 
 const mutations = {
     setTodos: (state, todos) => (state.todos = todos),
+
+    newTodo: (state, todo) => (state.todos.unshift(todo)),
 
     removeTodo: (state, id) => (state.todos = state.todos.filter(todo => todo.id !== id)),
 
