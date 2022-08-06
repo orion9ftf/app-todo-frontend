@@ -10,12 +10,47 @@
     <span>
         <span class="complete-box"></span> = Completado
     </span>
+
+    <div class="todos">
+        <div 
+            class="todo" 
+            v-for="todo in allTodos"
+            :key="todo.id"
+            @dblclick="onDoubleClick(todo)"
+            v-bind:class="{'is-complete':todo.completed}">
+            {{ todo.title }}
+            <i @click="deleteTodo(todo.id)" class="fas fa-trash-alt"></i>
+        </div>
+    </div>
   </div>
 </template>
-30:55
-<script>
-export default {
 
+<script>
+import { mapActions, mapGetters } from 'vuex';
+
+export default {
+    name: 'Todos',
+
+    methods: {
+        ...mapActions(['fetchTodos', 'deleteTodo', 'updateTodo']),
+
+        onDoubleClick(currentTodo){
+            const updatedTodo = {
+                id: currentTodo.id,
+                title: currentTodo.title,
+                completed: !currentTodo.completed
+            }
+            this.updateTodo(updatedTodo);
+        }
+    },
+
+    computed: {
+        ...mapGetters(['allTodos',])
+    },
+
+    created(){
+        this.fetchTodos();
+    }
 }
 </script>
 
@@ -62,6 +97,11 @@ i {
     width: 10px;
     height: 10px;
     background: #41b882;
+}
+
+.is-complete {
+    background: #35495e;
+    color: #fff;
 }
 
 @media (max-width: 500px) {
